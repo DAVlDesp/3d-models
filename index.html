@@ -1008,6 +1008,102 @@
       border-top: 1px solid var(--color-border);
     }
 
+    .cart-discount-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .cart-discount-button {
+      flex: 1;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-sunken);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      font: inherit;
+      font-size: var(--fs-sm);
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cart-discount-button:hover {
+      border-color: #E6CE81;
+      color: var(--color-text);
+    }
+
+    .cart-discount-button.is-active {
+      background: #E6CE81;
+      border-color: #E6CE81;
+      color: #282316;
+      font-weight: var(--fw-semibold);
+    }
+
+    .cart-discount-custom {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      min-width: 0;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-sunken);
+    }
+
+    .cart-discount-custom.is-active {
+      border-color: #E6CE81;
+      background: #E6CE81;
+    }
+
+    .cart-discount-input {
+      width: 55%;
+      min-width: 0;
+      padding: var(--space-xs) 0px var(--space-xs) var(--space-sm);
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--color-text-secondary);
+      text-align: right;
+      font: inherit;
+      font-size: var(--fs-sm);
+    }
+
+    .cart-discount-input::-webkit-outer-spin-button,
+    .cart-discount-input::-webkit-inner-spin-button {
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .cart-discount-input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .cart-discount-custom.is-active .cart-discount-input {
+      color: #282316;
+      font-weight: var(--fw-semibold);
+    }
+
+    .cart-discount-clear {
+      display: none;
+      flex: 0 0 auto;
+      padding: 0 var(--space-sm);
+      border: 0;
+      background: transparent;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+    }
+
+    .cart-discount-custom.is-active .cart-discount-clear {
+      display: inline-block;
+      color: #282316;
+      font: inherit;
+      line-height: 1;
+      font-weight: var(--fw-semibold);
+      margin: -2px 0 0 7px;
+    }
+
     .cart-total-row {
       display: flex;
       align-items: baseline;
@@ -2422,6 +2518,19 @@
             </div>
             <div id="cart-items" class="cart-items"></div>
             <div class="cart-footer">
+              <div class="cart-discount-controls" role="group" aria-label="Descuento de la compra">
+                <button type="button" class="cart-discount-button" data-cart-discount="5"
+                  aria-pressed="false">5%</button>
+                <button type="button" class="cart-discount-button" data-cart-discount="10"
+                  aria-pressed="false">10%</button>
+                <div class="cart-discount-custom" id="cart-discount-custom">
+                  <input class="cart-discount-input" type="number" id="cart-discount-input" min="1" max="100" step="1"
+                    value="15" inputmode="numeric" aria-label="Descuento personalizado en porcentaje">
+                  <p class="cart-discount-input" style="margin: 0; padding: 0; width:0%">%</p>
+                  <button type="button" class="cart-discount-clear" id="cart-discount-clear"
+                    aria-label="Quitar descuento personalizado" title="Quitar descuento">×</button>
+                </div>
+              </div>
               <div class="cart-total-row">
                 <span class="text-secondary">Total</span>
                 <span id="cart-total" class="cart-total">0$</span>
@@ -3009,7 +3118,7 @@
         </div>
       </div>
 
-      <!-- Modal de primer acceso / employee_data - R-46: sin campo de clave -->
+      <!-- Modal de primer acceso: los administradores también validan contraseña. -->
       <div class="modal-overlay hidden" id="first-access-modal" data-modal="first-access" data-dismissible="false">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="first-access-title">
           <form id="first-access-form" novalidate>
@@ -3022,6 +3131,11 @@
                 <label class="label" for="first-access-discord-id">Discord ID</label>
                 <input class="input" type="text" id="first-access-discord-id" inputmode="numeric" autocomplete="off"
                   placeholder="Introduce tu Discord ID">
+              </div>
+              <div class="form-group hidden" id="first-access-password-group" hidden>
+                <label class="label" for="first-access-admin-password">Contraseña de administrador</label>
+                <input class="input" type="password" id="first-access-admin-password" autocomplete="current-password"
+                  placeholder="Introduce la contraseña de administrador">
               </div>
               <div class="form-group">
                 <label class="label" for="first-access-ic-name">Nombre IC</label>
@@ -3176,6 +3290,7 @@
     const STORAGE_KEYS = Object.freeze({
       employeeData: "employee_data",
       employeeHistory: "employee_history",
+      adminCredential: "admin_credential",
       configuration: "configuracion",
       databaseConnection: "database_connection",
       databaseSnapshot: "database_snapshot"
@@ -3188,10 +3303,9 @@
     const DATABASE_HANDLE_STORE = "handles";
     const DATABASE_HANDLE_KEY = "administrative_database";
 
-    /* FASE 4 / R-39: la clave se deriva de la concatenacion de estos seis
-       fragmentos, en este orden exacto. No es una constante obviamente
-       dedicada a una contrasena: cada fragmento es un dato de dominio.
-       No se pide nada al usuario (R-46) y no se persiste en ningun sitio. */
+    /* La clave se deriva de la concatenacion de estos seis fragmentos, en
+       este orden. Se usa para employee_history y para verificar la contraseña
+       admin; la contraseña no se guarda en claro en el almacenamiento local. */
     const KEY_PARTS = Object.freeze({
       weaponNameSpecial: "SNS",
       productIdPs: "backpack_large",
@@ -3199,6 +3313,14 @@
       inventoryCategoryKey: "ACAMPADA",
       saleReferenceCore: "1900",
       historyDataMarker: "PAMM"
+    });
+
+    /* Verificador AES-GCM de la contraseña admin: solo se conserva el valor
+       cifrado y se reutiliza la clave derivada para el historial local. */
+    const ENCRYPTED_ADMIN_PASSWORD = Object.freeze({
+      v: 1,
+      iv: "1Rgw5noENbF86ams",
+      data: "UqkbwSEMJFK4JH9Nl2oc7DVxDqvYYFZ5FWKpbOCyRARGIb1OLLQc+oT5TjkvGyXA9g=="
     });
 
     const LOCAL_SCHEMA_VERSION = "1.0";
@@ -3228,7 +3350,9 @@
       history: createEmptyHistory(),
       connection: { state: "desconectado", fileName: "data/db.json", persisted: false },
       session: { discordId: "", icName: "", role: null },
-      cart: []
+      cart: [],
+      cartDiscount: 0,
+      cartDiscountSource: null
     };
 
     /* ==========================================================================
@@ -3239,6 +3363,19 @@
 
     function formatMoney(value) {
       return Number(value || 0).toLocaleString("es-ES") + "$";
+    }
+
+    function normalizeDiscount(value) {
+      const discount = Number(value);
+      return Number.isInteger(discount) && discount >= 0 && discount <= 100 ? discount : 0;
+    }
+
+    function applyDiscount(amount, discount) {
+      return Number(amount || 0) * (100 - normalizeDiscount(discount)) / 100;
+    }
+
+    function saleNetTotal(sale) {
+      return applyDiscount(Number(sale.sale_price || 0) * Number(sale.quantity || 0), sale.discount);
     }
 
     /* El beneficio SIEMPRE se deriva: nunca se almacena (TXT 2 s4.7 / s5.8). */
@@ -3389,6 +3526,31 @@
         /* Contenido corrupto o manipulado: se rechaza y NO se sobrescribe
            el estado valido (R-45, R-24, 4.6.6). */
         return null;
+      }
+    }
+
+    async function verifyAdminPassword(candidate) {
+      const decoded = await decryptHistory(ENCRYPTED_ADMIN_PASSWORD);
+      return Boolean(decoded && typeof decoded.password === "string" &&
+        decoded.password === String(candidate || ""));
+    }
+
+    async function saveAdminCredential(password) {
+      const encrypted = await encryptHistory({ password: String(password || "") });
+      return Boolean(encrypted && writeRaw(STORAGE_KEYS.adminCredential, JSON.stringify(encrypted)));
+    }
+
+    async function hasValidSavedAdminCredential() {
+      const raw = readRaw(STORAGE_KEYS.adminCredential);
+      if (!raw) return false;
+      try {
+        const payload = JSON.parse(raw);
+        if (!payload || payload.v !== 1 || typeof payload.iv !== "string" || typeof payload.data !== "string") return false;
+        const decoded = await decryptHistory(payload);
+        return Boolean(decoded && typeof decoded.password === "string" &&
+          await verifyAdminPassword(decoded.password));
+      } catch (error) {
+        return false;
       }
     }
 
@@ -4083,7 +4245,7 @@
        FASE 12 — IMPORTACION ATOMICA Y ACUMULATIVA
        Acepta historiales de empleado cifrados y DB administrativas JSON.
        ====================================================================== */
-    function validateImportRecords(records, label, employeeId) {
+    function validateImportRecords(records, label) {
       if (!Array.isArray(records)) throw new Error("La coleccion " + label + " no es valida.");
       records.forEach(function (record, index) {
         if (!record || typeof record !== "object" || Array.isArray(record) ||
@@ -4093,8 +4255,9 @@
         if (record.employee_id !== undefined && !/^\d+$/.test(String(record.employee_id))) {
           throw new Error("El registro " + record.id + " tiene un Discord ID no valido.");
         }
-        if (employeeId && String(record.employee_id || "") !== employeeId) {
-          throw new Error("El historial contiene movimientos asociados a otra identidad.");
+        if (label === "sales" && record.discount !== undefined &&
+          (!Number.isInteger(record.discount) || record.discount < 0 || record.discount > 100)) {
+          throw new Error("La venta " + record.id + " tiene un descuento no valido.");
         }
       });
     }
@@ -4119,8 +4282,11 @@
         if (!validateHistoryExportPackage(packageData)) {
           throw new Error("No se pudo validar o descifrar el historial. No se ha importado ningun dato.");
         }
-        validateImportRecords(packageData.sales, "sales", packageData.employee.id);
-        validateImportRecords(packageData.weapon_sales, "weapon_sales", packageData.employee.id);
+        /* El paquete identifica al empleado que lo exporto, pero el historial
+           completo puede contener ventas locales de varias identidades. Cada
+           employee_id de los movimientos se valida por separado como numerico. */
+        validateImportRecords(packageData.sales, "sales");
+        validateImportRecords(packageData.weapon_sales, "weapon_sales");
         return {
           employees: [{
             id: packageData.employee.id,
@@ -4742,7 +4908,7 @@
        6.2  Anadir producto al carrito.
        6.3  Cart Item reutilizable con controles de cantidad y subtotal.
        6.4  Controles -, input y +. Al llegar a 0 la linea se ELIMINA entera.
-       6.5  Total = suma de (sale_price x quantity).
+       6.5  El total aplica el descuento seleccionado al importe de compra.
        6.6  Compra: transaction_id comun, id unico por linea, snapshot del
             sale_price actual, employee_id = Discord ID, fecha ISO 8601 y
             guardado automatico en el historial cifrado.
@@ -4753,6 +4919,50 @@
     function setupCart() {
       const button = $("#purchase-button");
       if (button) button.addEventListener("click", function () { performPurchase(); });
+      $$("[data-cart-discount]").forEach(function (discountButton) {
+        discountButton.addEventListener("click", function () {
+          const selected = Number(discountButton.dataset.cartDiscount);
+          const isAlreadySelected = window.appData.cartDiscountSource === "fixed" &&
+            window.appData.cartDiscount === selected;
+          window.appData.cartDiscount = isAlreadySelected ? 0 : selected;
+          window.appData.cartDiscountSource = isAlreadySelected ? null : "fixed";
+          renderCart();
+        });
+      });
+
+      const customInput = $("#cart-discount-input");
+      const clearCustom = $("#cart-discount-clear");
+      if (customInput) customInput.addEventListener("focus", function () {
+        const discount = normalizeDiscount(customInput.value);
+        if (!discount) return;
+        window.appData.cartDiscount = discount;
+        window.appData.cartDiscountSource = "custom";
+        renderCart();
+      });
+      if (customInput) customInput.addEventListener("input", function () {
+        const rawValue = customInput.value.trim();
+        const discount = rawValue === "" ? 0 : normalizeDiscount(rawValue);
+        window.appData.cartDiscount = discount;
+        window.appData.cartDiscountSource = discount > 0 ? "custom" : null;
+        renderCart();
+      });
+      if (customInput) customInput.addEventListener("change", function () {
+        const value = Number(customInput.value);
+        if (Number.isFinite(value) && customInput.value.trim() !== "") {
+          customInput.value = String(Math.max(0, Math.min(100, Math.round(value))));
+        }
+        const discount = normalizeDiscount(customInput.value);
+        window.appData.cartDiscount = discount;
+        window.appData.cartDiscountSource = discount > 0 ? "custom" : null;
+        renderCart();
+      });
+      if (clearCustom) clearCustom.addEventListener("click", function () {
+        customInput.value = "15";
+        window.appData.cartDiscount = 0;
+        window.appData.cartDiscountSource = null;
+        renderCart();
+        clearCustom.blur();
+      });
     }
 
     let cartFollowFrame = 0;
@@ -4912,7 +5122,7 @@
       side.appendChild(calcBtn);
       side.appendChild(
         createElement("span", "cart-item-subtotal",
-          formatMoney(product.sale_price * line.quantity))
+          formatMoney(applyDiscount(product.sale_price * line.quantity, window.appData.cartDiscount)))
       );
 
 
@@ -4939,7 +5149,7 @@
       return window.appData.cart.reduce(function (total, line) {
         const product = findProduct(line.product_id);
         if (!product) return total;
-        return total + product.sale_price * line.quantity;
+        return total + applyDiscount(product.sale_price * line.quantity, window.appData.cartDiscount);
       }, 0);
     }
 
@@ -4972,6 +5182,14 @@
 
       $("#cart-count").textContent = cartUnits() + " articulos";
       $("#cart-total").textContent = formatMoney(cartTotal());
+      $$("[data-cart-discount]").forEach(function (discountButton) {
+        const active = window.appData.cartDiscountSource === "fixed" &&
+          Number(discountButton.dataset.cartDiscount) === window.appData.cartDiscount;
+        discountButton.classList.toggle("is-active", active);
+        discountButton.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      const customOption = $("#cart-discount-custom");
+      if (customOption) customOption.classList.toggle("is-active", window.appData.cartDiscountSource === "custom");
 
       if (button) {
         const empty = window.appData.cart.length === 0;
@@ -5013,7 +5231,7 @@
       const transactionId = generateUniqueId("transaction");
       const date = nowIso();
 
-      /* 6.6.4 y 6.6.5: id unico por linea y snapshot del precio actual. */
+      /* 6.6.4 y 6.6.5: id unico por linea, precio snapshot y descuento entero. */
       const newSales = window.appData.cart.map(function (line) {
         const product = findProduct(line.product_id);
         return {
@@ -5023,6 +5241,7 @@
           product_id: product.id,
           quantity: line.quantity,
           sale_price: product.sale_price,
+          discount: normalizeDiscount(window.appData.cartDiscount),
           date: date
         };
       });
@@ -5042,6 +5261,8 @@
 
       /* 6.6.10 */
       window.appData.cart = [];
+      window.appData.cartDiscount = 0;
+      window.appData.cartDiscountSource = null;
       renderCart();
       renderPersonalHistory();
 
@@ -5175,7 +5396,7 @@
       header.appendChild(left);
 
       const blockTotal = block.items.reduce(function (sum, sale) {
-        return sum + sale.sale_price * sale.quantity;
+        return sum + saleNetTotal(sale);
       }, 0);
       header.appendChild(createElement("span", "history-row-subtotal", formatMoney(blockTotal)));
 
@@ -5187,10 +5408,12 @@
         item.dataset.saleId = sale.id;
         item.dataset.productId = sale.product_id;
         item.appendChild(createElement("span", "history-item-title", resolveName(sale)));
+        const discount = normalizeDiscount(sale.discount);
         item.appendChild(createElement("span", "history-item-meta",
-          "x" + sale.quantity + " - " + formatMoney(sale.sale_price) + "$"));
+          "x" + sale.quantity + " - " + formatMoney(sale.sale_price) +
+          (discount ? " -> " + discount + "%" : "")));
         item.appendChild(createElement("span", "history-item-subtotal",
-          formatMoney(sale.sale_price * sale.quantity)));
+          formatMoney(saleNetTotal(sale))));
         items.appendChild(item);
       });
       row.appendChild(items);
@@ -5284,12 +5507,12 @@
       const groups = groupSalesByTransaction(sales);
       const units = sales.reduce(function (total, sale) { return total + Number(sale.quantity || 0); }, 0);
       const revenue = sales.reduce(function (total, sale) {
-        return total + Number(sale.sale_price || 0) * Number(sale.quantity || 0);
+        return total + saleNetTotal(sale);
       }, 0);
       const benefit = sales.reduce(function (total, sale) {
         const product = findProduct(sale.product_id);
         return total + (product
-          ? (Number(sale.sale_price || 0) - Number(product.real_price || 0)) * Number(sale.quantity || 0)
+          ? saleNetTotal(sale) - Number(product.real_price || 0) * Number(sale.quantity || 0)
           : 0);
       }, 0);
       [
@@ -5851,12 +6074,12 @@
       const totalProductBlocks = groupSalesByTransaction(allSales).length;
       const visibleProductLines = visibleSales.length;
       const totalRevenue = allSales.reduce(function (sum, sale) {
-        return sum + Number(sale.sale_price || 0) * Number(sale.quantity || 0);
+        return sum + saleNetTotal(sale);
       }, 0) + allWeaponSales.reduce(function (sum, sale) {
         return sum + Number(sale.sale_price || 0);
       }, 0);
       const visibleRevenue = visibleSales.reduce(function (sum, sale) {
-        return sum + Number(sale.sale_price || 0) * Number(sale.quantity || 0);
+        return sum + saleNetTotal(sale);
       }, 0) + visibleWeaponSales.reduce(function (sum, sale) {
         return sum + Number(sale.sale_price || 0);
       }, 0);
@@ -5896,7 +6119,7 @@
         const key = historyDateKey(sale.date);
         if (!key) return;
         totalsByDay.set(key, (totalsByDay.get(key) || 0) +
-          Number(sale.sale_price || 0) * Number(sale.quantity || 0));
+          saleNetTotal(sale));
       });
       weaponSales.forEach(function (sale) {
         const key = historyDateKey(sale.date);
@@ -6263,7 +6486,7 @@
         const row = getRow(sale.employee_id);
         if (!row) return;
         const quantity = Number(sale.quantity || 0);
-        row.productBenefit += (Number(sale.sale_price || 0) - Number(product.real_price || 0)) * quantity;
+        row.productBenefit += saleNetTotal(sale) - Number(product.real_price || 0) * quantity;
         row.productUnits += quantity;
       });
 
@@ -6310,7 +6533,7 @@
       (window.appData.db.sales || []).forEach(function (sale) {
         if (!matches(sale)) return;
         const product = findProduct(sale.product_id);
-        if (product) add(sale.date, (Number(sale.sale_price || 0) - Number(product.real_price || 0)) * Number(sale.quantity || 0));
+        if (product) add(sale.date, saleNetTotal(sale) - Number(product.real_price || 0) * Number(sale.quantity || 0));
       });
       (window.appData.db.weapon_sales || []).forEach(function (sale) {
         if (!matches(sale)) return;
@@ -6702,7 +6925,7 @@
       if (!item || !Number.isFinite(Number(item.real_price)) || !Number.isFinite(Number(sale.sale_price))) return null;
       const quantity = kind === "products" ? Number(sale.quantity) : 1;
       if (!Number.isFinite(quantity)) return null;
-      return (Number(sale.sale_price) - Number(item.real_price)) * quantity;
+      return applyDiscount(Number(sale.sale_price) * quantity, sale.discount) - Number(item.real_price) * quantity;
     }
 
     function employeeCategoryEntries(productSales, weaponSales) {
@@ -6805,7 +7028,7 @@
         const date = new Date(sale.date);
         if (Number.isNaN(date.getTime())) return;
         const key = getCommissionWeekRange(commissionLocalDateKey(date)).key;
-        const amount = employeeNumericValue(sale.sale_price) * (kind === "products" ? employeeNumericValue(sale.quantity) : 1);
+        const amount = kind === "products" ? saleNetTotal(sale) : employeeNumericValue(sale.sale_price);
         if (!Number.isFinite(amount)) return;
         totals.set(key, (totals.get(key) || 0) + amount);
       }
@@ -6943,13 +7166,14 @@
           itemsWrap.appendChild(item);
           itemsWrap.appendChild(createElement("span", "employee-modal-table-secondary",
             categoryLabel + " · ID producto: " + String(sale.product_id || "sin ID") + " · " +
-            formatMoney(sale.sale_price) + " / unidad · linea " +
-            formatMoney(employeeNumericValue(sale.sale_price) * employeeNumericValue(sale.quantity)) +
+            formatMoney(sale.sale_price) + " / unidad" +
+            (normalizeDiscount(sale.discount) ? " · descuento " + normalizeDiscount(sale.discount) + "%" : "") + " · linea " +
+            formatMoney(saleNetTotal(sale)) +
             " · ID: " + String(sale.id || "sin ID")));
         });
         appendEmployeeTableCell(row, itemsWrap);
         appendEmployeeTableCell(row, String(group.items.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.quantity); }, 0)));
-        const revenue = group.items.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.sale_price) * employeeNumericValue(sale.quantity); }, 0);
+        const revenue = group.items.reduce(function (sum, sale) { return sum + saleNetTotal(sale); }, 0);
         appendEmployeeTableCell(row, formatMoney(revenue), "employee-modal-amount");
         let benefit = 0;
         let known = true;
@@ -7011,7 +7235,7 @@
       const allWeapons = (window.appData.db.weapon_sales || []).filter(function (sale) { return String(sale.employee_id) === employee.id; });
       const productSales = filterEmployeeMovements(allProducts, "products", filters);
       const weaponSales = filterEmployeeMovements(allWeapons, "weapons", filters);
-      const productRevenue = productSales.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.sale_price) * employeeNumericValue(sale.quantity); }, 0);
+      const productRevenue = productSales.reduce(function (sum, sale) { return sum + saleNetTotal(sale); }, 0);
       const weaponRevenue = weaponSales.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.sale_price); }, 0);
       const productUnits = productSales.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.quantity); }, 0);
       const purchases = groupSalesByTransaction(productSales);
@@ -7178,7 +7402,8 @@
     /* ==========================================================================
        BLOQUE JS 10 — IDENTIDAD Y SESION (FASE 3)
        --------------------------------------------------------------------------
-       3.1  employee_data en localStorage, en claro, sin contrasena (R-41, R-46).
+       3.1  employee_data en claro solo contiene identidad; el admin valida
+            aparte una contraseña cifrada al iniciar (R-41).
        3.2  El rol se DERIVA del Discord ID. El usuario no elige rol (R-03).
        3.3  Discord ID obligatorio y solo digitos; Nombre IC obligatorio para
             entrar, pero NO influye en el rol (R-40).
@@ -7322,9 +7547,10 @@
 
       exitButton.addEventListener("click", function () {
         openConfirmModal(
-          "Se borrara tu sesion local de este navegador. Podras entrar de nuevo con tu Discord ID.",
+          "Se borrara tu sesion local de este navegador y se eliminara la contraseña cifrada guardada. Podras volver a identificarte despues.",
           function () {
             clearStoredEmployeeData();
+            removeRaw(STORAGE_KEYS.adminCredential);
             window.appData.session = { discordId: "", icName: "", role: null };
             renderUserArea();
             applyRoleVisibility(null);
@@ -7332,6 +7558,10 @@
             lockApp();
             $("#first-access-discord-id").value = "";
             $("#first-access-ic-name").value = "";
+            $("#first-access-admin-password").value = "";
+            $("#first-access-password-group").hidden = true;
+            $("#first-access-password-group").classList.add("hidden");
+            $("#first-access-admin-password").required = false;
             showFirstAccessError("");
             showToast("Sesion cerrada.", "info");
           }
@@ -7351,11 +7581,25 @@
       const form = $("#first-access-form");
       if (!form) return;
 
-      form.addEventListener("submit", function (event) {
+      const discordIdInput = $("#first-access-discord-id");
+      const passwordGroup = $("#first-access-password-group");
+      const passwordInput = $("#first-access-admin-password");
+
+      function updateAdminPasswordVisibility() {
+        const required = resolveRole(discordIdInput.value) === "admin";
+        passwordGroup.hidden = !required;
+        passwordGroup.classList.toggle("hidden", !required);
+        passwordInput.required = required;
+        if (!required) passwordInput.value = "";
+      }
+
+      discordIdInput.addEventListener("input", updateAdminPasswordVisibility);
+      updateAdminPasswordVisibility();
+
+      form.addEventListener("submit", async function (event) {
         event.preventDefault();
         showFirstAccessError("");
 
-        const discordIdInput = $("#first-access-discord-id");
         const icNameInput = $("#first-access-ic-name");
         const discordId = discordIdInput.value.trim();
         const icName = icNameInput.value.trim();
@@ -7369,11 +7613,43 @@
         }
 
         const employee = validation.employee;
+        if (employee.role === "admin") {
+          if (!passwordInput.value) {
+            showFirstAccessError("La contraseña de administrador es obligatoria.");
+            passwordInput.focus();
+            return;
+          }
+
+          let passwordMatches = false;
+          try {
+            passwordMatches = await verifyAdminPassword(passwordInput.value);
+          } catch (error) {
+            passwordMatches = false;
+          }
+          if (!passwordMatches) {
+            passwordInput.value = "";
+            showFirstAccessError("La contraseña de administrador no es correcta.");
+            passwordInput.focus();
+            return;
+          }
+        }
+
+        let credentialSaved = true;
+        if (employee.role === "admin") {
+          credentialSaved = await saveAdminCredential(passwordInput.value);
+        } else {
+          removeRaw(STORAGE_KEYS.adminCredential);
+        }
         startSession(employee);
-        showToast("Sesion iniciada como " + ROLE_LABELS[employee.role] + ".", "success");
+        passwordInput.value = "";
+        if (!credentialSaved) {
+          showToast("Sesion iniciada, pero no se pudo guardar la contraseña cifrada para futuros accesos.", "warning");
+        } else {
+          showToast("Sesion iniciada como " + ROLE_LABELS[employee.role] + ".", "success");
+        }
       });
 
-      ["#first-access-discord-id", "#first-access-ic-name"].forEach(function (selector) {
+      ["#first-access-discord-id", "#first-access-ic-name", "#first-access-admin-password"].forEach(function (selector) {
         const input = $(selector);
         if (input) input.addEventListener("input", function () { showFirstAccessError(""); });
       });
@@ -7415,10 +7691,24 @@
 
       const stored = normalizeEmployeeData(readStoredEmployeeData());
 
-      if (stored) {
+      const adminCredentialValid = stored && stored.role === "admin"
+        ? await hasValidSavedAdminCredential()
+        : false;
+
+      if (stored && (stored.role !== "admin" || adminCredentialValid)) {
         startSession(stored);
-        showToast("Sesion restaurada como " + ROLE_LABELS[stored.role] + ".", "info");
+        if (stored.role !== "admin") {
+          showToast("Sesion restaurada como " + ROLE_LABELS[stored.role] + ".", "info");
+        }
       } else {
+        if (stored) {
+          $("#first-access-discord-id").value = stored.discord_id;
+          $("#first-access-ic-name").value = stored.ic_name;
+          $("#first-access-admin-password").value = "";
+          $("#first-access-password-group").hidden = false;
+          $("#first-access-password-group").classList.remove("hidden");
+          $("#first-access-admin-password").required = true;
+        }
         applyRoleVisibility(null);
         renderUserArea();
         lockApp();
