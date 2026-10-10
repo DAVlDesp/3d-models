@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ammunition</title>
+  <title>Ammu-Nation</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
   <style>
     /* ==========================================================================
@@ -359,8 +359,121 @@
 
     .app-tabs {
       display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
       flex-wrap: wrap;
       gap: var(--space-xs);
+    }
+
+    .tab-buttons {
+      display: flex;
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .tab-settings-button {
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+
+    #app-tabs.is-icon-only .tab {
+      justify-content: center;
+      min-width: 38px;
+      padding-inline: var(--space-sm);
+    }
+
+    #app-tabs.is-icon-only .tab>span {
+      display: none;
+    }
+
+    .tab-preferences-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .tab-preference-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-raised);
+    }
+
+    .tab-preference-name {
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-medium);
+    }
+
+    .tab-preference-options {
+      display: inline-flex;
+      flex: 0 0 auto;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: #050505;
+    }
+
+    .tab-preference-option {
+      min-width: 48px;
+      padding: 5px 9px;
+      border-radius: 4px;
+      color: #777;
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-semibold);
+    }
+
+    .tab-preference-option.is-selected[data-visible="true"] {
+      background: #168544;
+      color: #fff;
+    }
+
+    .tab-preference-option.is-selected[data-visible="false"] {
+      background: #a52630;
+      color: #fff;
+    }
+
+    .tab-preference-option:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .tab-icon-mode {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-raised);
+    }
+
+    .tab-icon-mode-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tab-icon-mode-toggle {
+      width: 44px;
+      height: 24px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+
+    .tab-preferences-modal {
+      max-width: 560px;
+    }
+
+    .tab-preferences-footer {
+      display: flex;
+      justify-content: flex-end;
     }
 
     .tab {
@@ -386,6 +499,21 @@
       background: var(--color-accent-dark);
       border-color: var(--color-accent-dark);
       color: var(--color-accent);
+    }
+
+    #app-tabs .tab:not(.is-active) {
+      background: #052416;
+    }
+
+    #app-tabs .tab[data-roles="admin"]:not(.is-active) {
+      background: #1d0524;
+      color: var(--color-text-secondary);
+    }
+
+    #app-tabs .tab[data-roles="admin"].is-active {
+      background: #530d67;
+      border-color: #530d67;
+      color: #e34ad6;
     }
 
     /* ==========================================================================
@@ -913,6 +1041,11 @@
       white-space: nowrap;
     }
 
+    .history-item-weapon-details .history-item-meta {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
     .history-item-subtotal {
       font-weight: var(--fw-semibold);
       white-space: nowrap;
@@ -951,6 +1084,22 @@
       margin: 0;
       font-size: var(--fs-xs);
       color: var(--color-text-secondary);
+    }
+
+    .weapon-sales-export {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+    }
+
+    .weapon-sales-export-copy {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: var(--fs-sm);
     }
 
     .cart-item-trash {
@@ -1165,9 +1314,29 @@
     .weapon-preview-content {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      width: 100%;
       gap: var(--space-md);
       color: var(--color-text-secondary);
     }
+
+    .weapon-preview-item {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .weapon-discount-controls {
+      flex: 0 1 250px;
+      min-width: 210px;
+      padding: 0;
+      border: 0;
+    }
+
+    /* .weapon-preview-content .cart-discount-custom.is-active .cart-discount-input {
+      color: var(--color-text-secondary);
+    } */
 
     .weapon-preview-image {
       width: 96px;
@@ -1889,6 +2058,9 @@
     .data-block-actions {
       display: flex;
       gap: var(--space-sm);
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: row;
       flex-wrap: wrap;
     }
 
@@ -2140,6 +2312,16 @@
         flex-direction: column;
       }
 
+      .weapon-preview-content {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .weapon-discount-controls {
+        width: 100%;
+        min-width: 0;
+      }
+
       .tab {
         justify-content: flex-start;
       }
@@ -2361,6 +2543,11 @@
         <circle cx="16" cy="7" r="2" />
         <circle cx="10" cy="17" r="2" />
       </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" />
+        <path
+          d="m19.4 13.5 1.1.9-1.1 1.9-1.4-.5a7.8 7.8 0 0 1-1.4.8l-.3 1.5h-2.2l-.4-1.5a7.8 7.8 0 0 1-1.6 0l-.8 1.3-1.9-1.1.5-1.4a7.8 7.8 0 0 1-.8-1.4l-1.5-.3v-2.2l1.5-.4a7.8 7.8 0 0 1 0-1.6l-1.3-.8 1.1-1.9 1.4.5a7.8 7.8 0 0 1 1.4-.8l.3-1.5h2.2l.4 1.5a7.8 7.8 0 0 1 1.6 0l.8-1.3 1.9 1.1-.5 1.4a7.8 7.8 0 0 1 .8 1.4l1.5.3v2.2l-1.5.4a7.8 7.8 0 0 1 0 1.6Z" />
+      </symbol>
     </defs>
   </svg>
 
@@ -2378,7 +2565,7 @@
             </svg>
           </div>
           <div class="nav-branding-text">
-            <span class="nav-title">Ammunition</span>
+            <span class="nav-title">Ammu-Nation</span>
           </div>
         </div>
 
@@ -2419,53 +2606,61 @@
       </div>
 
       <nav class="app-tabs" id="app-tabs" aria-label="Navegacion principal">
-        <button type="button" class="tab is-active" data-target="purchase-section">
+        <div class="tab-buttons" id="tab-buttons">
+          <button type="button" class="tab is-active" data-target="purchase-section">
+            <svg class="icon icon--sm">
+              <use href="#icon-cart" />
+            </svg>
+            <span>Compra</span>
+          </button>
+          <button type="button" class="tab" data-target="weapon-sale-section">
+            <svg class="icon icon--sm">
+              <use href="#icon-crosshair" />
+            </svg>
+            <span>Venta de Armas</span>
+          </button>
+          <button type="button" class="tab" data-target="personal-history-section">
+            <svg class="icon icon--sm">
+              <use href="#icon-clock" />
+            </svg>
+            <span>Mi Historial</span>
+          </button>
+          <button type="button" class="tab" data-target="employees-section" data-roles="admin">
+            <svg class="icon icon--sm">
+              <use href="#icon-users" />
+            </svg>
+            <span>Empleados</span>
+          </button>
+          <button type="button" class="tab" data-target="global-sales-section" data-roles="admin">
+            <svg class="icon icon--sm">
+              <use href="#icon-chart" />
+            </svg>
+            <span>Historial Global</span>
+          </button>
+          <button type="button" class="tab" data-target="weapon-sales-section" data-roles="admin">
+            <svg class="icon icon--sm">
+              <use href="#icon-target" />
+            </svg>
+            <span>Registro de Armas</span>
+          </button>
+          <button type="button" class="tab" data-target="commissions-section" data-roles="admin">
+            <svg class="icon icon--sm">
+              <use href="#icon-coins" />
+            </svg>
+            <span>Comisiones</span>
+          </button>
+          <button type="button" class="tab" data-target="data-management-section" data-roles="admin">
+            <svg class="icon icon--sm">
+              <use href="#icon-database" />
+            </svg>
+            <span>Gestion de Datos</span>
+          </button>
+        </div>
+        <button type="button" class="icon-button tab-settings-button" id="tab-settings-button"
+          aria-label="Configurar pestañas" title="Configurar pestañas" data-roles="admin">
           <svg class="icon icon--sm">
-            <use href="#icon-cart" />
+            <use href="#icon-settings" />
           </svg>
-          <span>Compra</span>
-        </button>
-        <button type="button" class="tab" data-target="weapon-sale-section">
-          <svg class="icon icon--sm">
-            <use href="#icon-crosshair" />
-          </svg>
-          <span>Venta de Armas</span>
-        </button>
-        <button type="button" class="tab" data-target="personal-history-section">
-          <svg class="icon icon--sm">
-            <use href="#icon-clock" />
-          </svg>
-          <span>Mi Historial</span>
-        </button>
-        <button type="button" class="tab" data-target="employees-section" data-roles="admin">
-          <svg class="icon icon--sm">
-            <use href="#icon-users" />
-          </svg>
-          <span>Empleados</span>
-        </button>
-        <button type="button" class="tab" data-target="global-sales-section" data-roles="admin">
-          <svg class="icon icon--sm">
-            <use href="#icon-chart" />
-          </svg>
-          <span>Historial Global</span>
-        </button>
-        <button type="button" class="tab" data-target="weapon-sales-section" data-roles="admin">
-          <svg class="icon icon--sm">
-            <use href="#icon-target" />
-          </svg>
-          <span>Registro de Armas</span>
-        </button>
-        <button type="button" class="tab" data-target="commissions-section" data-roles="admin">
-          <svg class="icon icon--sm">
-            <use href="#icon-coins" />
-          </svg>
-          <span>Comisiones</span>
-        </button>
-        <button type="button" class="tab" data-target="data-management-section" data-roles="admin">
-          <svg class="icon icon--sm">
-            <use href="#icon-database" />
-          </svg>
-          <span>Gestion de Datos</span>
         </button>
       </nav>
     </header>
@@ -2592,7 +2787,24 @@
               <div class="form-block" id="weapon-preview" aria-live="polite">
                 <span class="form-block-title">Arma seleccionada</span>
                 <div class="weapon-preview-content" id="weapon-preview-content">
-                  <p class="text-secondary">Selecciona un modelo para ver sus datos.</p>
+                  <div class="weapon-preview-item" id="weapon-preview-item">
+                    <p class="text-secondary">Selecciona un modelo para ver sus datos.</p>
+                  </div>
+                  <div class="cart-discount-controls weapon-discount-controls" role="group"
+                    aria-label="Descuento de la venta de arma">
+                    <button type="button" class="cart-discount-button" data-weapon-discount="5"
+                      aria-pressed="false">5%</button>
+                    <button type="button" class="cart-discount-button" data-weapon-discount="10"
+                      aria-pressed="false">10%</button>
+                    <div class="cart-discount-custom" id="weapon-discount-custom" style="min-width: 75px;">
+                      <input class="cart-discount-input" type="number" id="weapon-discount-input" min="1" max="100"
+                        step="1" value="15" inputmode="numeric"
+                        aria-label="Descuento personalizado de arma en porcentaje">
+                      <span class="cart-discount-input" style="margin: 0; padding: 0; width: 0">%</span>
+                      <button type="button" class="cart-discount-clear" id="weapon-discount-clear"
+                        aria-label="Quitar descuento personalizado del arma" title="Quitar descuento">×</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -2609,7 +2821,7 @@
 
             <div class="three-d-block-container" aria-label="Vista 3D del arma seleccionada">
               <model-viewer id="weapon-3d-viewer" alt="Modelo 3D del arma seleccionada" auto-rotate
-                auto-rotate-delay="0" rotation-per-second="8deg" disable-zoom disable-pan interaction-prompt="none"
+                auto-rotate-delay="0" rotation-per-second="8deg" camera-controls disable-zoom interaction-prompt="none"
                 shadow-intensity="1" camera-orbit="35deg 75deg auto" loading="eager">
               </model-viewer>
             </div>
@@ -2651,33 +2863,14 @@
           <p class="filters-summary" id="personal-history-summary"></p>
         </div>
 
-        <div class="card hidden" id="personal-history-evolution" aria-label="Evolucion de ventas">
-          <div class="card-header">
-            <span class="card-title">Evolucion de ventas</span>
-          </div>
-          <div id="personal-history-evolution-chart"></div>
-        </div>
 
-        <div class="history-columns">
-          <div class="card">
-            <div class="card-header">
-              <span class="card-title">Ventas de productos</span>
-            </div>
-            <div id="personal-history-products" class="history-list"></div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <span class="card-title">Ventas de armas</span>
-            </div>
-            <div id="personal-history-weapons" class="history-list"></div>
-          </div>
-        </div>
 
         <div class="card" id="personal-history-export">
           <div class="card-header">
             <span class="card-title">Exportar historial</span>
           </div>
           <div class="data-block-actions">
+            <p> Descarga el documento que posteriormente deberás adjuntar en el canal de Discord correspondiente.</p>
             <button type="button" class="button button-primary" id="export-history-button" style="margin-top: 20px;">
               <svg class="icon icon--sm">
                 <use href="#icon-download" />
@@ -2686,6 +2879,36 @@
             </button>
           </div>
         </div>
+
+
+        <div class="history-columns">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Ventas de productos</span>
+            </div>
+            <div id="personal-history-products" class="history-list"></div>
+          </div>
+
+
+
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Ventas de armas</span>
+            </div>
+            <div id="personal-history-weapons" class="history-list"></div>
+          </div>
+        </div>
+
+
+        <div class="card hidden" id="personal-history-evolution" aria-label="Evolucion de ventas">
+          <div class="card-header">
+            <span class="card-title">Evolucion de ventas</span>
+          </div>
+          <div id="personal-history-evolution-chart"></div>
+        </div>
+
+
       </section>
 
       <!-- 4 — EMPLOYEES -->
@@ -2805,6 +3028,17 @@
           <div class="filters-actions">
             <button type="button" class="button" id="weapon-sales-clear">Limpiar</button>
           </div>
+        </div>
+
+        <div id="weapon-sales-export" class="card weapon-sales-export">
+          <p class="weapon-sales-export-copy">El PDF incluirá únicamente las ventas que coincidan con los filtros
+            actuales.</p>
+          <button type="button" class="button button-secondary" id="weapon-sales-export-pdf">
+            <svg class="icon icon--sm">
+              <use href="#icon-download" />
+            </svg>
+            <span>Exportar a PDF</span>
+          </button>
         </div>
 
         <div id="weapon-sales-results" class="card results-panel">
@@ -2951,6 +3185,37 @@
        CONTENEDOR GLOBAL DE MODALES
        ======================================================================== -->
     <div id="modal-container" class="modal-container">
+
+      <div class="modal-overlay hidden" id="tab-preferences-modal" data-modal="tab-preferences" aria-hidden="true">
+        <div class="modal tab-preferences-modal" role="dialog" aria-modal="true"
+          aria-labelledby="tab-preferences-title">
+          <div class="modal-header">
+            <div>
+              <h3 class="modal-title" id="tab-preferences-title">Preferencias de pestañas</h3>
+              <p class="text-secondary">Elige qué apartados aparecen en tu navegación.</p>
+            </div>
+            <button type="button" class="modal-close" data-close-modal="tab-preferences"
+              aria-label="Cerrar preferencias">
+              <svg class="icon">
+                <use href="#icon-close" />
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="tab-preferences-list" id="tab-preferences-list"></div>
+            <label class="tab-icon-mode" for="tab-icon-mode-toggle">
+              <span class="tab-icon-mode-copy">
+                <span class="tab-preference-name">Modo solo iconos</span>
+                <span class="text-secondary">Oculta los nombres de las pestañas.</span>
+              </span>
+              <input class="tab-icon-mode-toggle" type="checkbox" id="tab-icon-mode-toggle">
+            </label>
+            <div class="tab-preferences-footer">
+              <button type="button" class="button button-primary" data-close-modal="tab-preferences">Listo</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal de detalle de empleado -->
       <div class="modal-overlay hidden" id="employee-detail-modal" data-modal="employee-detail">
@@ -3256,19 +3521,19 @@
       sales: [],
       weapon_sales: [],
       commissions: [
-        { profit: 400, commission: 200 },
-        { profit: 1000, commission: 500 },
-        { profit: 2000, commission: 1000 },
-        { profit: 3000, commission: 1500 },
-        { profit: 4000, commission: 2000 },
-        { profit: 6000, commission: 3000 },
-        { profit: 8000, commission: 4000 },
-        { profit: 10000, commission: 5000 },
-        { profit: 12000, commission: 6000 },
-        { profit: 16000, commission: 8000 },
-        { profit: 20000, commission: 10000 },
-        { profit: 30000, commission: 15000 },
-        { profit: 40000, commission: 20000 }
+        { profit: 1000, commission: 200 },
+        { profit: 2500, commission: 500 },
+        { profit: 5000, commission: 1000 },
+        { profit: 7500, commission: 1500 },
+        { profit: 10000, commission: 2000 },
+        { profit: 15000, commission: 3000 },
+        { profit: 20000, commission: 4000 },
+        { profit: 25000, commission: 5000 },
+        { profit: 30000, commission: 6000 },
+        { profit: 40000, commission: 8000 },
+        { profit: 50000, commission: 10000 },
+        { profit: 75000, commission: 15000 },
+        { profit: 100000, commission: 20000 }
       ]
     };
 
@@ -3281,8 +3546,7 @@
        ========================================================================== */
     const ADMIN_IDS = Object.freeze([
       "1126212461159256104",
-      "210645442231402496",
-      "326656722544623617"
+      "210645442231402496"
     ]);
 
     /* FASE 4 / R-41: employee_data en CLARO.
@@ -3296,8 +3560,12 @@
       databaseSnapshot: "database_snapshot"
     });
 
-    const DEFAULT_CONFIGURATION = Object.freeze({ product3dEnabled: true });
-    let appConfiguration = { product3dEnabled: DEFAULT_CONFIGURATION.product3dEnabled };
+    const DEFAULT_CONFIGURATION = Object.freeze({ product3dEnabled: true, navTabVisibility: {}, navTabsIconOnly: false });
+    let appConfiguration = {
+      product3dEnabled: DEFAULT_CONFIGURATION.product3dEnabled,
+      navTabVisibility: {},
+      navTabsIconOnly: DEFAULT_CONFIGURATION.navTabsIconOnly
+    };
 
     const DATABASE_HANDLE_DB = "pamm_database_handles";
     const DATABASE_HANDLE_STORE = "handles";
@@ -3352,7 +3620,9 @@
       session: { discordId: "", icName: "", role: null },
       cart: [],
       cartDiscount: 0,
-      cartDiscountSource: null
+      cartDiscountSource: null,
+      weaponDiscount: 0,
+      weaponDiscountSource: null
     };
 
     /* ==========================================================================
@@ -3376,6 +3646,15 @@
 
     function saleNetTotal(sale) {
       return applyDiscount(Number(sale.sale_price || 0) * Number(sale.quantity || 0), sale.discount);
+    }
+
+    function weaponSaleNetTotal(sale) {
+      return applyDiscount(Number(sale.sale_price || 0), sale.discount);
+    }
+
+    function saleDiscountDescription(sale) {
+      const discount = normalizeDiscount(sale && sale.discount);
+      return formatMoney(sale && sale.sale_price) + (discount ? " -> " + discount + "%" : "");
     }
 
     /* El beneficio SIEMPRE se deriva: nunca se almacena (TXT 2 s4.7 / s5.8). */
@@ -3572,10 +3851,16 @@
         } catch (error) { /* Una configuracion corrupta vuelve a valores seguros. */ }
       }
       const source = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+      const savedVisibility = source.navTabVisibility && typeof source.navTabVisibility === "object" &&
+        !Array.isArray(source.navTabVisibility) ? source.navTabVisibility : {};
       appConfiguration = Object.assign({}, source, {
         product3dEnabled: typeof source.product3dEnabled === "boolean"
           ? source.product3dEnabled
-          : DEFAULT_CONFIGURATION.product3dEnabled
+          : DEFAULT_CONFIGURATION.product3dEnabled,
+        navTabVisibility: Object.assign({}, savedVisibility),
+        navTabsIconOnly: typeof source.navTabsIconOnly === "boolean"
+          ? source.navTabsIconOnly
+          : DEFAULT_CONFIGURATION.navTabsIconOnly
       });
       return appConfiguration;
     }
@@ -4255,7 +4540,7 @@
         if (record.employee_id !== undefined && !/^\d+$/.test(String(record.employee_id))) {
           throw new Error("El registro " + record.id + " tiene un Discord ID no valido.");
         }
-        if (label === "sales" && record.discount !== undefined &&
+        if ((label === "sales" || label === "weapon_sales") && record.discount !== undefined &&
           (!Number.isInteger(record.discount) || record.discount < 0 || record.discount > 100)) {
           throw new Error("La venta " + record.id + " tiene un descuento no valido.");
         }
@@ -4608,7 +4893,11 @@
         const objectUrl = URL.createObjectURL(blob);
         const link = createElement("a");
         link.href = objectUrl;
-        link.download = "historial_" + KEY_PARTS.historyDataMarker + "_" + getLocalDateStamp(new Date()) + ".ammunation";
+        const safeEmployeeName = String(session.icName || "historial").trim()
+          .replace(/\s+/g, "-")
+          .replace(/[<>:"\/\\|?*]/g, "-")
+          .replace(/-+/g, "-");
+        link.download = safeEmployeeName + "_" + getLocalDateStamp(new Date()) + ".ammunation";
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
@@ -4691,6 +4980,103 @@
       });
     }
 
+    function setupTabPreferences() {
+      const opener = $("#tab-settings-button");
+      if (opener) opener.addEventListener("click", function () {
+        renderTabPreferences();
+        openModal("tab-preferences");
+      });
+
+      const iconToggle = $("#tab-icon-mode-toggle");
+      if (iconToggle) iconToggle.addEventListener("change", function () {
+        const previous = appConfiguration.navTabsIconOnly;
+        appConfiguration.navTabsIconOnly = iconToggle.checked;
+        if (!saveConfiguration()) {
+          appConfiguration.navTabsIconOnly = previous;
+          iconToggle.checked = previous;
+          showToast("No se pudieron guardar las preferencias.", "error");
+          return;
+        }
+        applyNavigationPreferences(window.appData.session.role);
+      });
+    }
+
+    function tabPreferenceIsVisible(tab) {
+      const value = appConfiguration.navTabVisibility && appConfiguration.navTabVisibility[tab.dataset.target];
+      return typeof value === "boolean" ? value : true;
+    }
+
+    function renderTabPreferences() {
+      const list = $("#tab-preferences-list");
+      const iconToggle = $("#tab-icon-mode-toggle");
+      if (!list) return;
+      list.textContent = "";
+      $$("#app-tabs .tab").forEach(function (tab) {
+        const target = tab.dataset.target;
+        const title = tab.querySelector("span");
+        const row = createElement("div", "tab-preference-row");
+        row.appendChild(createElement("span", "tab-preference-name", title ? title.textContent.trim() : target));
+
+        const options = createElement("div", "tab-preference-options");
+        options.setAttribute("role", "group");
+        options.setAttribute("aria-label", "Mostrar " + (title ? title.textContent.trim() : target));
+        [true, false].forEach(function (visible) {
+          const button = createElement("button", "tab-preference-option", visible ? "Sí" : "No");
+          button.type = "button";
+          button.dataset.target = target;
+          button.dataset.visible = String(visible);
+          button.setAttribute("aria-pressed", String(tabPreferenceIsVisible(tab) === visible));
+          if (tabPreferenceIsVisible(tab) === visible) button.classList.add("is-selected");
+          button.addEventListener("click", function () {
+            const currentlyVisible = tabPreferenceIsVisible(tab);
+            if (currentlyVisible === visible) return;
+            const visibleCount = $$("#app-tabs .tab").filter(tabPreferenceIsVisible).length;
+            if (!visible && visibleCount <= 1) {
+              showToast("Debe quedar al menos una pestaña visible.", "warning");
+              return;
+            }
+            const previousPreference = appConfiguration.navTabVisibility[target];
+            appConfiguration.navTabVisibility[target] = visible;
+            if (!saveConfiguration()) {
+              showToast("No se pudieron guardar las preferencias.", "error");
+              if (typeof previousPreference === "boolean") {
+                appConfiguration.navTabVisibility[target] = previousPreference;
+              } else {
+                delete appConfiguration.navTabVisibility[target];
+              }
+              renderTabPreferences();
+              return;
+            }
+            applyNavigationPreferences(window.appData.session.role);
+            renderTabPreferences();
+            if (!visible && document.querySelector("#" + target + ".is-active")) {
+              activateSection(firstAllowedSection());
+            }
+          });
+          options.appendChild(button);
+        });
+        row.appendChild(options);
+        list.appendChild(row);
+      });
+      if (iconToggle) iconToggle.checked = appConfiguration.navTabsIconOnly;
+    }
+
+    function applyNavigationPreferences(role) {
+      const isAdmin = role === "admin";
+      $$("#app-tabs .tab").forEach(function (tab) {
+        const roleAllowed = !tab.dataset.roles || tab.dataset.roles === role;
+        const preferenceAllowed = !isAdmin || tabPreferenceIsVisible(tab);
+        setVisible(tab, roleAllowed && preferenceAllowed);
+        const label = tab.querySelector("span");
+        if (label) {
+          tab.setAttribute("aria-label", label.textContent.trim());
+          tab.title = label.textContent.trim();
+        }
+      });
+      setVisible($("#tab-settings-button"), isAdmin);
+      $("#app-tabs").classList.toggle("is-icon-only", isAdmin && appConfiguration.navTabsIconOnly);
+    }
+
     /* Un unico dueño de la visibilidad de secciones: activateSection.
        Si alguien intenta abrir una sección de admin sin serlo, se rechaza. */
     function activateSection(sectionId) {
@@ -4740,7 +5126,12 @@
       const section = document.getElementById(sectionId);
       if (!section) return false;
       const roles = section.dataset.roles;
-      return !roles || roles === window.appData.session.role;
+      if (roles && roles !== window.appData.session.role) return false;
+      if (window.appData.session.role === "admin") {
+        const tab = $("#app-tabs .tab[data-target='" + sectionId + "']");
+        if (tab && !tabPreferenceIsVisible(tab)) return false;
+      }
+      return true;
     }
 
     function firstAllowedSection() {
@@ -4752,10 +5143,7 @@
     }
 
     function applyRoleVisibility(role) {
-      $$("#app-tabs .tab").forEach(function (tab) {
-        const roles = tab.dataset.roles;
-        setVisible(tab, !(Boolean(roles) && roles !== role));
-      });
+      applyNavigationPreferences(role);
 
       setVisible($("#nav-db-zone"), role === "admin");
     }
@@ -5667,6 +6055,217 @@
       });
     }
 
+    function getFilteredGlobalWeaponSales() {
+      return filterGlobalWeaponSales(window.appData.db.weapon_sales || [], getGlobalWeaponFilters())
+        .slice()
+        .sort(function (a, b) { return new Date(b.date).getTime() - new Date(a.date).getTime(); });
+    }
+
+    function pdfSafeText(value) {
+      const text = String(value === undefined || value === null ? "" : value)
+        .replace(/º/g, "\u0001")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      let escaped = "";
+      for (let index = 0; index < text.length; index += 1) {
+        const character = text[index];
+        const code = text.charCodeAt(index);
+        if (character === "\u0001") escaped += "\\272";
+        else if (character === "\\" || character === "(" || character === ")") escaped += "\\" + character;
+        else if (code >= 32 && code <= 126) escaped += character;
+        else if (code >= 160 && code <= 255) escaped += "\\" + code.toString(8).padStart(3, "0");
+        else escaped += " ";
+      }
+      return escaped;
+    }
+
+    function wrapPdfText(value, maxCharacters) {
+      const text = String(value === undefined || value === null ? "" : value).trim();
+      if (!text) return [""];
+      const words = text.split(/\s+/);
+      const lines = [];
+      let line = "";
+      words.forEach(function (word) {
+        while (word.length > maxCharacters) {
+          if (line) {
+            lines.push(line);
+            line = "";
+          }
+          lines.push(word.slice(0, maxCharacters));
+          word = word.slice(maxCharacters);
+        }
+        if (!word) return;
+        const candidate = line ? line + " " + word : word;
+        if (candidate.length > maxCharacters) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = candidate;
+        }
+      });
+      if (line) lines.push(line);
+      return lines.length ? lines : [""];
+    }
+
+    function buildWeaponSalesPdf(sales) {
+      const pageWidth = 595;
+      const pageHeight = 842;
+      const columns = [
+        { label: "Fecha", width: 62 },
+        { label: "Empleado", width: 68 },
+        { label: "Modelo", width: 52 },
+        { label: "ID de cliente", width: 63 },
+        { label: "Nº Licencia", width: 94 },
+        { label: "Nº Serie", width: 135 },
+        { label: "Precio", width: 65 }
+      ];
+      const headerHeight = 24;
+      const rowTextSize = 7;
+      const rowLineHeight = 9;
+      const tableX = 28;
+      const tableTop = 734;
+      const tableWidth = columns.reduce(function (sum, column) { return sum + column.width; }, 0);
+      const dataTop = tableTop - headerHeight;
+      const bottomLimit = 58;
+      const pages = [[]];
+      let currentPageHeight = 0;
+
+      sales.forEach(function (sale) {
+        const weapon = findWeapon(sale.weapon_id);
+        const values = [
+          formatDateOnly(sale.date),
+          globalSaleEmployeeName(sale.employee_id),
+          sale.model || (weapon && weapon.name) || sale.weapon_id,
+          sale.citizen_dni,
+          sale.weapon_license,
+          sale.serial_number,
+          (normalizeDiscount(sale.discount)
+            ? saleDiscountDescription(sale) + " = " + formatMoney(weaponSaleNetTotal(sale))
+            : formatMoney(weaponSaleNetTotal(sale)))
+        ];
+        const wrappedValues = values.map(function (value, columnIndex) {
+          const maxCharacters = Math.max(5, Math.floor((columns[columnIndex].width - 12) / 4.2));
+          return wrapPdfText(value || "—", maxCharacters);
+        });
+        const lineCount = Math.max.apply(null, wrappedValues.map(function (lines) { return lines.length; }));
+        const rowHeight = Math.max(25, lineCount * rowLineHeight + 10);
+        if (currentPageHeight + rowHeight > dataTop - bottomLimit && pages[pages.length - 1].length) {
+          pages.push([]);
+          currentPageHeight = 0;
+        }
+        pages[pages.length - 1].push({ values: wrappedValues, rowHeight: rowHeight });
+        currentPageHeight += rowHeight;
+      });
+      const pageCount = pages.length;
+
+      function textOperator(text, x, y, size, font, color) {
+        return "BT /" + font + " " + size + " Tf " + color + " rg 1 0 0 1 " + x + " " + y +
+          " Tm (" + pdfSafeText(text) + ") Tj ET\n";
+      }
+
+      function rectOperator(x, y, width, height, color) {
+        return "q " + color + " rg " + x + " " + y + " " + width + " " + height + " re f Q\n";
+      }
+
+      function makePage(pageIndex) {
+        let stream = "";
+        const pageRows = pages[pageIndex];
+        stream += rectOperator(0, 775, pageWidth, 67, "0.075 0.12 0.19");
+        stream += rectOperator(0, 772, pageWidth, 3, "0.90 0.81 0.51");
+        stream += textOperator("REGISTRO DE ARMAS | Ammu-Nation", 30, 813, 17, "F2", "1 1 1");
+        stream += textOperator("Exportacion de " + sales.length + " registros", 30, 793, 9, "F1", "0.83 0.87 0.92");
+        stream += textOperator("Archivo generado el " + formatDateOnly(nowIso()), 30, 780, 8, "F1", "0.83 0.87 0.92");
+        stream += rectOperator(tableX, tableTop - headerHeight, tableWidth, headerHeight, "0.14 0.21 0.30");
+        let columnX = tableX;
+        columns.forEach(function (column) {
+          stream += textOperator(column.label, columnX + 4, tableTop - 16, 7, "F2", "1 1 1");
+          columnX += column.width;
+        });
+
+        if (!pageRows.length) {
+          stream += textOperator("No hay registros que coincidan con los filtros actuales.", tableX + 8, tableTop - 48, 10, "F1", "0.35 0.40 0.46");
+        }
+
+        let rowTop = dataTop;
+        pageRows.forEach(function (row, rowIndex) {
+          const rowBottom = rowTop - row.rowHeight;
+          stream += rectOperator(tableX, rowBottom, tableWidth, row.rowHeight,
+            rowIndex % 2 === 0 ? "0.96 0.97 0.98" : "1 1 1");
+          stream += "q 0.86 0.88 0.91 RG 0.45 w " + tableX + " " + rowBottom + " m " +
+            (tableX + tableWidth) + " " + rowBottom + " l S Q\n";
+          let x = tableX;
+          row.values.forEach(function (lines, columnIndex) {
+            const column = columns[columnIndex];
+            const blockHeight = lines.length * rowLineHeight;
+            const firstBaseline = rowTop - (row.rowHeight - blockHeight) / 2 - rowLineHeight + 1;
+            lines.forEach(function (line, lineIndex) {
+              stream += textOperator(line, x + 6, firstBaseline - lineIndex * rowLineHeight,
+                rowTextSize, "F1", "0.16 0.20 0.25");
+            });
+            x += column.width;
+          });
+          rowTop = rowBottom;
+        });
+
+        stream += textOperator("Ammu-Nation", 30, 25, 8, "F1", "0.42 0.47 0.53");
+        stream += textOperator("Pagina " + (pageIndex + 1) + " de " + pageCount, 500, 25, 8, "F1", "0.42 0.47 0.53");
+        return stream;
+      }
+
+      const objects = [];
+      objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+      objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+      objects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+      const pageRefs = [];
+      for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
+        const pageObjectId = 5 + pageIndex * 2;
+        const contentObjectId = pageObjectId + 1;
+        pageRefs.push(pageObjectId + " 0 R");
+        const stream = makePage(pageIndex);
+        objects[pageObjectId] = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + pageWidth + " " + pageHeight +
+          "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + contentObjectId + " 0 R >>";
+        objects[contentObjectId] = "<< /Length " + stream.length + " >>\nstream\n" + stream + "endstream";
+      }
+      objects[2] = "<< /Type /Pages /Kids [" + pageRefs.join(" ") + "] /Count " + pageCount + " >>";
+
+      let documentText = "%PDF-1.4\n%PAMM\n";
+      const offsets = [0];
+      for (let objectId = 1; objectId < objects.length; objectId += 1) {
+        offsets[objectId] = documentText.length;
+        documentText += objectId + " 0 obj\n" + objects[objectId] + "\nendobj\n";
+      }
+      const xrefOffset = documentText.length;
+      documentText += "xref\n0 " + objects.length + "\n0000000000 65535 f \n";
+      for (let objectId = 1; objectId < objects.length; objectId += 1) {
+        documentText += String(offsets[objectId]).padStart(10, "0") + " 00000 n \n";
+      }
+      documentText += "trailer\n<< /Size " + objects.length + " /Root 1 0 R >>\nstartxref\n" + xrefOffset + "\n%%EOF";
+      return new Blob([documentText], { type: "application/pdf" });
+    }
+
+    function exportGlobalWeaponSalesPdf() {
+      const button = $("#weapon-sales-export-pdf");
+      if (button) button.disabled = true;
+      try {
+        const sales = getFilteredGlobalWeaponSales();
+        const blob = buildWeaponSalesPdf(sales);
+        const url = URL.createObjectURL(blob);
+        const link = createElement("a");
+        link.href = url;
+        link.download = "registro-armas_" + getLocalDateStamp(new Date()) + ".pdf";
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        showToast("PDF generado con " + sales.length + " venta(s) de armas.", "success");
+      } catch (error) {
+        showToast("No se pudo generar el PDF del registro de armas.", "error");
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
     function buildGlobalWeaponRecord(sale) {
       const row = createElement("article", "history-row");
       const header = createElement("div", "history-row-header");
@@ -5676,13 +6275,18 @@
       details.appendChild(createElement("span", "history-row-date", formatDateTime(sale.date)));
       details.appendChild(createElement("span", "history-row-meta", globalSaleEmployeeName(sale.employee_id)));
       header.appendChild(details);
-      header.appendChild(createElement("span", "history-row-subtotal", formatMoney(sale.sale_price)));
+      header.appendChild(createElement("span", "history-row-subtotal", formatMoney(weaponSaleNetTotal(sale))));
       row.appendChild(header);
       const items = createElement("div", "history-row-items");
       items.appendChild(createElement("span", "history-item-title", weapon ? weapon.name : String(sale.weapon_id || "Arma")));
       items.appendChild(createElement("span", "history-item-meta", "Modelo: " + (sale.model || "—")));
-      items.appendChild(createElement("span", "history-item-meta", "DNI: " + (sale.citizen_dni || "—") + " · Licencia: " + (sale.weapon_license || "—")));
+      items.appendChild(createElement("span", "history-item-meta", "DNI: " + (sale.citizen_dni || "—")));
+      items.appendChild(createElement("span", "history-item-meta", "Licencia: " + (sale.weapon_license || "—")));
       items.appendChild(createElement("span", "history-item-meta", "Serie: " + (sale.serial_number || "—")));
+      if (normalizeDiscount(sale.discount)) {
+        items.appendChild(createElement("span", "history-item-meta", "Precio: " + saleDiscountDescription(sale)));
+      }
+      items.appendChild(createElement("span", "history-item-subtotal", formatMoney(weaponSaleNetTotal(sale))));
       row.appendChild(items);
       return row;
     }
@@ -5724,9 +6328,7 @@
       const summary = $("#weapon-sales-summary");
       if (!list || !summary) return;
       const all = window.appData.db.weapon_sales || [];
-      const filtered = filterGlobalWeaponSales(all, getGlobalWeaponFilters()).slice().sort(function (a, b) {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
+      const filtered = getFilteredGlobalWeaponSales();
       const state = globalWeaponState;
       state.generation += 1;
       state.loading = false;
@@ -5747,7 +6349,7 @@
         checkGlobalWeaponScroll();
       }
       summary.textContent = "";
-      const revenue = filtered.reduce(function (sum, sale) { return sum + Number(sale.sale_price || 0); }, 0);
+      const revenue = filtered.reduce(function (sum, sale) { return sum + weaponSaleNetTotal(sale); }, 0);
       const cards = [
         { label: "Ventas de armas", value: String(filtered.length) },
         { label: "Ingresos", value: formatMoney(revenue) }
@@ -5762,7 +6364,7 @@
     }
 
     function renderGlobalWeaponChart(sales) {
-      const card = $("#weapon-sales-chart-container");
+      // const card = $("#weapon-sales-chart-container");
       const target = $("#weapon-sales-chart");
       if (!card || !target) return;
       target.textContent = "";
@@ -5828,6 +6430,8 @@
       });
       const list = $("#weapon-sales-list");
       list.addEventListener("scroll", checkGlobalWeaponScroll, { passive: true });
+      const exportButton = $("#weapon-sales-export-pdf");
+      if (exportButton) exportButton.addEventListener("click", exportGlobalWeaponSalesPdf);
       $("#weapon-sales-clear").addEventListener("click", function () {
         ["#weapon-sales-from", "#weapon-sales-to", "#weapon-sales-dni", "#weapon-sales-license", "#weapon-sales-serial", "#weapon-sales-search"]
           .forEach(function (selector) { $(selector).value = ""; });
@@ -6047,7 +6651,7 @@
       const row = createElement("div", "history-row");
       const header = createElement("div", "history-row-header");
       header.appendChild(createElement("span", "history-row-date", formatDateTime(sale.date)));
-      header.appendChild(createElement("span", "history-row-subtotal", formatMoney(sale.sale_price)));
+      header.appendChild(createElement("span", "history-row-subtotal", formatMoney(weaponSaleNetTotal(sale))));
       row.appendChild(header);
 
       const item = createElement("div", "history-row-items");
@@ -6058,11 +6662,14 @@
       const text = createElement("div", "history-item-weapon-details");
       text.appendChild(createElement("span", "history-item-title",
         sale.model || (weapon ? weapon.model : sale.weapon_id)));
-      text.appendChild(createElement("span", "history-item-meta",
-        "Serie: " + (sale.serial_number || "—") + " · DNI: " + (sale.citizen_dni || "—") +
-        " · Licencia: " + (sale.weapon_license || "—")));
+      text.appendChild(createElement("span", "history-item-meta", "Serie: " + (sale.serial_number || "—")));
+      text.appendChild(createElement("span", "history-item-meta", "DNI: " + (sale.citizen_dni || "—")));
+      text.appendChild(createElement("span", "history-item-meta", "Licencia: " + (sale.weapon_license || "—")));
+      if (normalizeDiscount(sale.discount)) {
+        text.appendChild(createElement("span", "history-item-meta", "Precio: " + saleDiscountDescription(sale)));
+      }
       details.appendChild(text);
-      details.appendChild(createElement("span", "history-item-subtotal", formatMoney(sale.sale_price)));
+      details.appendChild(createElement("span", "history-item-subtotal", formatMoney(weaponSaleNetTotal(sale))));
       item.appendChild(details);
       row.appendChild(item);
       return row;
@@ -6076,12 +6683,12 @@
       const totalRevenue = allSales.reduce(function (sum, sale) {
         return sum + saleNetTotal(sale);
       }, 0) + allWeaponSales.reduce(function (sum, sale) {
-        return sum + Number(sale.sale_price || 0);
+        return sum + weaponSaleNetTotal(sale);
       }, 0);
       const visibleRevenue = visibleSales.reduce(function (sum, sale) {
         return sum + saleNetTotal(sale);
       }, 0) + visibleWeaponSales.reduce(function (sum, sale) {
-        return sum + Number(sale.sale_price || 0);
+        return sum + weaponSaleNetTotal(sale);
       }, 0);
       const hasFilters = Boolean(getHistoryFilters().from || getHistoryFilters().to ||
         getHistoryFilters().category || getHistoryFilters().search.trim());
@@ -6124,7 +6731,7 @@
       weaponSales.forEach(function (sale) {
         const key = historyDateKey(sale.date);
         if (!key) return;
-        totalsByDay.set(key, (totalsByDay.get(key) || 0) + Number(sale.sale_price || 0));
+        totalsByDay.set(key, (totalsByDay.get(key) || 0) + weaponSaleNetTotal(sale));
       });
 
       const entries = Array.from(totalsByDay.entries()).sort(function (a, b) {
@@ -6231,11 +6838,17 @@
       return parsed.toLocaleString("es-ES");
     }
 
+    function formatDateOnly(iso) {
+      const parsed = new Date(iso);
+      if (Number.isNaN(parsed.getTime())) return "";
+      return parsed.toLocaleDateString("es-ES");
+    }
+
     /* ==========================================================================
        BLOQUE JS 8 — SELECTORES DE ARMAS Y FILTROS
        ========================================================================== */
     function renderWeaponPreview() {
-      const box = $("#weapon-preview-content");
+      const box = $("#weapon-preview-item");
       const select = $("#weapon-model");
       if (!box || !select) return;
       const weapon = findWeapon(select.value);
@@ -6243,20 +6856,41 @@
       box.textContent = "";
       if (!weapon) {
         box.appendChild(createElement("p", "text-secondary", "Selecciona un modelo para ver sus datos."));
+        renderWeaponDiscountControls();
         return;
       }
 
-      const preview = createElement("div", "weapon-preview-content");
       const image = buildProductThumb(weapon);
       image.classList.add("weapon-preview-image");
-      preview.appendChild(image);
+      box.appendChild(image);
       const details = createElement("div", "weapon-preview-details");
       details.appendChild(createElement("strong", "", weapon.name));
       details.appendChild(createElement("span", "", "Modelo: " + weapon.model));
       details.appendChild(createElement("span", "", "Categoria: " + weapon.category));
       details.appendChild(createElement("span", "", "Precio: " + formatMoney(weapon.sale_price)));
-      preview.appendChild(details);
-      box.appendChild(preview);
+      details.lastElementChild.id = "weapon-preview-price";
+      box.appendChild(details);
+      renderWeaponDiscountControls();
+    }
+
+    function renderWeaponDiscountControls() {
+      $$('[data-weapon-discount]').forEach(function (button) {
+        const active = window.appData.weaponDiscountSource === "fixed" &&
+          Number(button.dataset.weaponDiscount) === window.appData.weaponDiscount;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      const custom = $("#weapon-discount-custom");
+      if (custom) custom.classList.toggle("is-active", window.appData.weaponDiscountSource === "custom");
+
+      const weapon = findWeapon($("#weapon-model") && $("#weapon-model").value);
+      const price = $("#weapon-preview-price");
+      if (price && weapon) {
+        const discount = normalizeDiscount(window.appData.weaponDiscount);
+        const net = weaponSaleNetTotal({ sale_price: weapon.sale_price, discount: discount });
+        price.textContent = "Precio: " + formatMoney(weapon.sale_price) +
+          (discount ? " -> " + discount + "% · " + formatMoney(net) : "");
+      }
     }
 
     function setWeaponViewerSource(weapon) {
@@ -6303,6 +6937,52 @@
         select.removeAttribute("aria-invalid");
         renderWeaponPreview();
       });
+
+      $$('[data-weapon-discount]').forEach(function (discountButton) {
+        discountButton.addEventListener("click", function () {
+          const selected = Number(discountButton.dataset.weaponDiscount);
+          const alreadySelected = window.appData.weaponDiscountSource === "fixed" &&
+            window.appData.weaponDiscount === selected;
+          window.appData.weaponDiscount = alreadySelected ? 0 : selected;
+          window.appData.weaponDiscountSource = alreadySelected ? null : "fixed";
+          renderWeaponDiscountControls();
+        });
+      });
+
+      const discountInput = $("#weapon-discount-input");
+      const clearDiscount = $("#weapon-discount-clear");
+      if (discountInput) discountInput.addEventListener("focus", function () {
+        const discount = normalizeDiscount(discountInput.value);
+        if (!discount) return;
+        window.appData.weaponDiscount = discount;
+        window.appData.weaponDiscountSource = "custom";
+        renderWeaponDiscountControls();
+      });
+      if (discountInput) discountInput.addEventListener("input", function () {
+        const raw = discountInput.value.trim();
+        const discount = raw === "" ? 0 : normalizeDiscount(raw);
+        window.appData.weaponDiscount = discount;
+        window.appData.weaponDiscountSource = discount > 0 ? "custom" : null;
+        renderWeaponDiscountControls();
+      });
+      if (discountInput) discountInput.addEventListener("change", function () {
+        const value = Number(discountInput.value);
+        if (Number.isFinite(value) && discountInput.value.trim() !== "") {
+          discountInput.value = String(Math.max(0, Math.min(100, Math.round(value))));
+        }
+        const discount = normalizeDiscount(discountInput.value);
+        window.appData.weaponDiscount = discount;
+        window.appData.weaponDiscountSource = discount > 0 ? "custom" : null;
+        renderWeaponDiscountControls();
+      });
+      if (clearDiscount) clearDiscount.addEventListener("click", function () {
+        if (discountInput) discountInput.value = "15";
+        window.appData.weaponDiscount = 0;
+        window.appData.weaponDiscountSource = null;
+        renderWeaponDiscountControls();
+        clearDiscount.blur();
+      });
+
       form.addEventListener("input", function (event) {
         if (event.target.matches("input")) {
           event.target.classList.remove("is-invalid");
@@ -6317,6 +6997,8 @@
           });
           const firstWeapon = window.appData.catalog.weapons[0];
           if (firstWeapon) select.value = firstWeapon.id;
+          window.appData.weaponDiscount = 0;
+          window.appData.weaponDiscountSource = null;
           renderWeaponPreview();
         }, 0);
       });
@@ -6347,6 +7029,7 @@
           weapon_id: weapon.id,
           date: nowIso(),
           sale_price: weapon.sale_price,
+          discount: normalizeDiscount(window.appData.weaponDiscount),
           citizen_dni: $("#citizen-dni").value.trim(),
           weapon_license: $("#weapon-license").value.trim(),
           serial_number: $("#weapon-serial").value.trim(),
@@ -6364,7 +7047,7 @@
         form.reset();
         renderPersonalHistory();
         if (adminPersistence.attempted && !adminPersistence.saved) {
-          showToast("Venta guardada en tu historial local, pero no en db.json. Descarga el JSON desde Gestion de Datos.", "warning");
+          showToast("Venta guardada en tu historial.", "warning");
         } else {
           showToast("Venta de " + weapon.name + " guardada en tu historial local.", "success");
         }
@@ -6497,7 +7180,7 @@
         if (!weapon) return;
         const row = getRow(sale.employee_id);
         if (!row) return;
-        row.weaponBenefit += Number(sale.sale_price || 0) - Number(weapon.real_price || 0);
+        row.weaponBenefit += weaponSaleNetTotal(sale) - Number(weapon.real_price || 0);
         row.weaponCount += 1;
       });
 
@@ -6538,7 +7221,7 @@
       (window.appData.db.weapon_sales || []).forEach(function (sale) {
         if (!matches(sale)) return;
         const weapon = findWeapon(sale.weapon_id);
-        if (weapon) add(sale.date, Number(sale.sale_price || 0) - Number(weapon.real_price || 0));
+        if (weapon) add(sale.date, weaponSaleNetTotal(sale) - Number(weapon.real_price || 0));
       });
       return Array.from(totals.entries()).sort(function (a, b) { return a[0].localeCompare(b[0]); });
     }
@@ -7028,7 +7711,7 @@
         const date = new Date(sale.date);
         if (Number.isNaN(date.getTime())) return;
         const key = getCommissionWeekRange(commissionLocalDateKey(date)).key;
-        const amount = kind === "products" ? saleNetTotal(sale) : employeeNumericValue(sale.sale_price);
+        const amount = kind === "products" ? saleNetTotal(sale) : weaponSaleNetTotal(sale);
         if (!Number.isFinite(amount)) return;
         totals.set(key, (totals.get(key) || 0) + amount);
       }
@@ -7200,7 +7883,8 @@
           when.appendChild(createElement("span", "employee-modal-table-secondary",
             (sale.model || (weapon && weapon.model) || String(sale.weapon_id || "Modelo desconocido")) +
             " · Categoria: " + (weapon ? weapon.category : "desconocida") +
-            " · ID arma: " + String(sale.weapon_id || "sin ID") + " · ID venta: " + String(sale.id || "sin ID")));
+            " · ID arma: " + String(sale.weapon_id || "sin ID") + " · ID venta: " + String(sale.id || "sin ID") +
+            " · Precio base: " + saleDiscountDescription(sale)));
           appendEmployeeTableCell(row, when);
 
           const legal = createElement("div");
@@ -7215,7 +7899,7 @@
           });
           if (!legal.childNodes.length) legal.textContent = "Sin datos adicionales";
           appendEmployeeTableCell(row, legal);
-          appendEmployeeTableCell(row, formatMoney(sale.sale_price), "employee-modal-amount");
+          appendEmployeeTableCell(row, formatMoney(weaponSaleNetTotal(sale)), "employee-modal-amount");
           const benefit = employeeSaleBenefit(sale, weapon, "weapons");
           appendEmployeeTableCell(row, benefit === null ? "—" : formatMoney(benefit), "employee-modal-amount");
         });
@@ -7236,7 +7920,7 @@
       const productSales = filterEmployeeMovements(allProducts, "products", filters);
       const weaponSales = filterEmployeeMovements(allWeapons, "weapons", filters);
       const productRevenue = productSales.reduce(function (sum, sale) { return sum + saleNetTotal(sale); }, 0);
-      const weaponRevenue = weaponSales.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.sale_price); }, 0);
+      const weaponRevenue = weaponSales.reduce(function (sum, sale) { return sum + weaponSaleNetTotal(sale); }, 0);
       const productUnits = productSales.reduce(function (sum, sale) { return sum + employeeNumericValue(sale.quantity); }, 0);
       const purchases = groupSalesByTransaction(productSales);
       let estimatedBenefit = 0;
@@ -7669,6 +8353,7 @@
       if (!interactionsBound) {
         interactionsBound = true;
         setupTabs();
+        setupTabPreferences();
         setupModals();
         setupConfirmModal();
         setupFirstAccessForm();
